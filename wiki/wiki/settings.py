@@ -11,6 +11,20 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import socket
+
+# List of desktop names
+DESKTOP_NAMES = ['localhost', 'DESKTOP-DBLCULO']
+
+# Detect Host name
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = 'localhost'
+
+# Host detector
+IS_IN_LOCALHOST = HOSTNAME in DESKTOP_NAMES
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +39,13 @@ SECRET_KEY = 'django-insecure-se98y3bub0scn(qk=5l%#a(_ubvcdf6si2mvamzp==u2190qr!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if IS_IN_LOCALHOST:
+    ALLOWED_HOSTS = [
+        'localhost',
+        'http://localhost:3000',
+    ]
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -38,11 +58,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'wikiweb',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -122,3 +144,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if IS_IN_LOCALHOST:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000'
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = []
